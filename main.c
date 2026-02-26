@@ -47,9 +47,20 @@ static const patch_t patches[] = {
         "\x29\x3B\x2E\x3B",
         "\x00\x00\x00\x00"
     ),
+    PATCH(
+        0x0000306E, 4, 
+        "\x9C\xD8\xC4\x00",
+        "\x06\x7C\x44\x00"
+    ),
+    PATCH(
+        0x00003123, 4, 
+        "\x9C\xD8\xC4\x00",
+        "\x06\x7C\x44\x00"
+    ),
 };
 
 static const size_t patches_count = sizeof(patches) / sizeof(patches[0]);
+static const size_t checked_patches_count = 3;
 
 static const WCHAR WINDOW_CAPTION[] =
     L"SuperWoW Heal Text Disabler";
@@ -87,7 +98,7 @@ static void apply_patch (unsigned char* data, size_t size, patch_version_t patch
 }
 
 static bool check_patch (const unsigned char* data, size_t size, patch_version_t patch_version) {
-    for (const patch_t* p = patches; p < patches + patches_count; ++p) {
+    for (const patch_t* p = patches; p < patches + checked_patches_count; ++p) {
         const unsigned char* dst = data + p->offset;
         const unsigned char* end = dst + p->size;
         const unsigned char* src = p->data[patch_version];
@@ -169,9 +180,9 @@ int WinMainCRTStartup () {
         exit_text = INVALID_DATA_MSG;
         goto out;
     }
-    if (current_version != patch_version) {
-        apply_patch(view_data, view_size, patch_version);
-    }
+    
+    apply_patch(view_data, view_size, patch_version);
+
     exit_text = patch_version == PATCH_VERSION_NEW ? PATCH_APPLIED_MSG : PATCH_REMOVED_MSG;
 
 out:

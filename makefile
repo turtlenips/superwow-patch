@@ -1,5 +1,5 @@
 superwow_heal_text_disabler.exe: main.c makefile
-	cl $< /Fe:$@ \
+	cl main.c /Fe:$@ \
 		/std:c17 /O2 \
 		/link \
 		/nologo \
